@@ -14,6 +14,7 @@ pipenv run python main.py
 to run test cases : pipenv run python -m pytest
 
 ## Video
+[![cis6930fa24-project3](https://img.youtube.com/vi/aFrdk-pRstw/0.jpg)](https://www.youtube.com/watch?v=aFrdk-pRstw)
 
 ## Functions
 
