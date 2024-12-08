@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization Options</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: top;
+            align-items: top;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        ul li {
+            margin-bottom: 15px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+            padding: 8px 12px;
+            border: 1px solid #4CAF50;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+            cursor: pointer;
+        }
+
+        ul li a:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        .back-btn, .home-btn {
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.2rem;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .back-btn:hover, .home-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Visualization Options</h2>
+    </header>
+
+    <div class="container">
+        <ul>
+            <li><a id="clustering-link">View Clustering Graph</a></li>
+            <li><a id="bar-chart-link">View Bar Chart</a></li>
+            <li><a id="custom-graph-link">View Custom Graph</a></li>
+        </ul>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="message">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div id="graph-container"></div>
+
+        <button id="back-btn" class="back-btn" style="display: none;">Back to Visualization Options</button>
+        <button id="home-btn" class="home-btn" style="display: none;">Go to Homepage</button>
+    </div>
+
+    <script>
+        document.getElementById("clustering-link").onclick = function() {
+            loadGraph('clustering');
+        };
+
+        document.getElementById("bar-chart-link").onclick = function() {
+            loadGraph('bar');
+        };
+
+        document.getElementById("custom-graph-link").onclick = function() {
+            loadGraph('custom');
+        };
+
+        function loadGraph(type) {
+            fetch(`/graph/${type}`).then(response => response.blob()).then(data => {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const base64Image = reader.result;
+                    const imgTag = `<img src="${base64Image}" alt="${type} Graph">`;
+                    document.getElementById("graph-container").innerHTML = imgTag;
+                    document.getElementById("back-btn").style.display = "block";
+                    document.getElementById("home-btn").style.display = "block";
+                    document.querySelector("ul").style.display = "none";
+                };
+                reader.readAsDataURL(data);
+            }).catch(err => console.error(err));
+        }
+
+        document.getElementById("back-btn").onclick = function() {
+            document.getElementById("graph-container").innerHTML = "";
+            document.getElementById("back-btn").style.display = "none";
+            document.getElementById("home-btn").style.display = "none";
+            document.querySelector("ul").style.display = "block";
+        };
+
+        document.getElementById("home-btn").onclick = function() {
+            window.location.href = "/";
+        };
+    </script>
+</body>
+</html>
