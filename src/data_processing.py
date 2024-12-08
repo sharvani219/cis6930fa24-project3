@@ -10,10 +10,7 @@ from collections import defaultdict
 import re
 
 def extract_data_from_pdf(pdf_path):
-    """
-    Extracts incident data from a NormanPD-style PDF and structures it into a list of rows.
-    Does not perform any post-processing like adding 'Count' column or dropping rows.
-    """
+    
     reader = PdfReader(pdf_path)
     nature_counts = defaultdict(int)
     incidents = []  

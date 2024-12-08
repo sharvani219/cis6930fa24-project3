@@ -10,11 +10,10 @@ import urllib.request
 UPLOAD_FOLDER = "uploads"
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"  # Needed for flash messages
+app.secret_key = "your_secret_key"  
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Global variables to hold data (not recommended for production use)
 clustered_data = None
 data = None
 
@@ -28,7 +27,6 @@ def index():
 def upload_file():
     global clustered_data, data
 
-    # Check if files or URLs are provided
     files = request.files.getlist("file")
     urls = request.form.get("urls")
 
@@ -58,7 +56,6 @@ def upload_file():
                 with urllib.request.urlopen(url) as response:
                     pdf_data = response.read()
 
-                    # Create a unique file name for each URL (using the last part of the URL)
                     file_name = url.split("/")[-1]
                     pdf_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
 
@@ -75,16 +72,11 @@ def upload_file():
                 flash(f"Error downloading or processing the PDF from URL {url}: {str(e)}")
                 continue
 
-    # Create DataFrame from all incidents
     data = pd.DataFrame(all_incidents, columns=["Date", "Incident Number", "Location", "Nature", "ORI"])
-
-    # Add 'Count' column based on 'Nature' frequency
     data["Count"] = data["Nature"].map(nature_counts)
 
-    # Clean the data by dropping rows with missing 'Nature' or 'Count'
     data.dropna(subset=["Nature", "Count"], inplace=True)
 
-    # Perform clustering
     clustered_data = cluster_incidents(data)
 
     return redirect(url_for("visualization"))
@@ -102,15 +94,11 @@ def graph_clustering():
     if clustered_data is None:
         flash("No data available. Please upload a file first.")
         return redirect(url_for("index"))
-
-    # Generate the clustering graph in memory
     img = cluster_incidents(data, num_clusters=3)  # Pass the correct DataFrame
 
     if img is None:
         flash("There was an issue generating the clustering graph.")
         return redirect(url_for("index"))
-
-    # Return the image as a response to be displayed in the browser
     return send_file(img, mimetype='image/png')
 
 

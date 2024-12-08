@@ -7,9 +7,7 @@ def test_plot_bar_chart_valid_data():
         'Nature': ['Theft', 'Assault', 'Theft', 'Robbery', 'Theft', 'Assault', 'Assault']
     })
     
-    # Call the function to generate the plot
     img = plot_bar_graph(data)
-    # Ensure that the returned object is a BytesIO object
     assert isinstance(img, BytesIO), "The function should return a BytesIO object."
     img.seek(0)  
     img_data = img.read()
